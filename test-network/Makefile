@@ -1,5 +1,6 @@
 # See https://hyperledger-fabric.readthedocs.io/en/release-2.2/test_network.html
 C=""
+CC_PACKAGE_ID=""
 
 restart:
 	./network.sh down
@@ -18,3 +19,12 @@ invoke:
 query:
 	@peer chaincode query -C mychannel -n basic -c '$(C)'
 
+logs:
+	@./monitordocker.sh net_test
+
+approve:
+	peer lifecycle chaincode approveformyorg -o localhost:7050 \
+		--ordererTLSHostnameOverride orderer.example.com \
+		--channelID mychannel --name basic --version 1.0 \
+		--package-id $(CC_PACKAGE_ID) --sequence 1 --tls \
+		--cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
