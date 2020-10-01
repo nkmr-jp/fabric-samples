@@ -5,12 +5,7 @@ CTOR=""
 CC_PACKAGE_ID=""
 
 env:
-	@export FABRIC_CFG_PATH=$$PWD/../config/
-	@echo ""
-	@echo "-------- ORG INFO --------"
-	@echo "CORE_PEER_LOCALMSPID:" $$CORE_PEER_LOCALMSPID
-	@echo "CORE_PEER_ADDRESS:" $$CORE_PEER_ADDRESS
-	@echo ""
+	@echo "[\"$$CORE_PEER_LOCALMSPID\"]"
 
 restart: down up
 
@@ -20,13 +15,13 @@ restart-with-cc: restart
 	@echo ""
 	./network.sh deployCC
 
-up: env
+up:
 	@echo ""
 	@echo "-------- network up createChannel --------"
 	@echo ""
 	./network.sh up createChannel
 
-down: env
+down:
 	@echo ""
 	@echo "-------- network down. --------"
 	@echo ""

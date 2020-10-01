@@ -18,9 +18,9 @@ make invoke CTOR='{"function":"InitLedger","Args":[]}'
 # 所有者を変更
 make invoke CTOR='{"function":"TransferAsset","Args":["asset6","Christopher"]}'
 # 全てのAssetを取得
-make query CTOR='{"Args":["GetAllAssets"]}' | jq -c -R 'fromjson? | .[]'
+make query CTOR='{"Args":["GetAllAssets"]}' | jq -c .[]
 # Assetを指定して取得
-make query CTOR='{"Args":["ReadAsset","asset6"]}' | jq -R 'fromjson? | .'
+make query CTOR='{"Args":["ReadAsset","asset6"]}' | jq .
 # net_testのコンテナの全てのログを表示
 make logs
 # fabric関連のコンテナを表示
