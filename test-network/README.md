@@ -14,13 +14,17 @@ source cfgenv.sh
 # ネットワークを再構築して、チャネルを作って、CC(basic)をデプロイする
 make restart
 # 台帳を初期化
-make invoke C='{"function":"InitLedger","Args":[]}'
+make invoke CTOR='{"function":"InitLedger","Args":[]}'
 # 所有者を変更
-make invoke C='{"function":"TransferAsset","Args":["asset6","Christopher"]}'
+make invoke CTOR='{"function":"TransferAsset","Args":["asset6","Christopher"]}'
 # 全てのAssetを取得
-make query C='{"Args":["GetAllAssets"]}' | jq -c .[]
+make query CTOR='{"Args":["GetAllAssets"]}' | jq -c .[]
 # Assetを指定して取得
-make query C='{"Args":["ReadAsset","asset6"]}' | jq -c .[]
+make query CTOR='{"Args":["ReadAsset","asset6"]}' | jq -c .[]
+# net_testのコンテナの全てのログを表示
+make logs
+# fabric関連のコンテナを表示
+make ps
 
 # peerを切り替える
 source org1env.sh
