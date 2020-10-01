@@ -8,8 +8,8 @@ Before you can deploy the test network, you need to follow the instructions to [
 ## 追加メモ
 
 ```sh
-# CONFIGのPATHを追加する
-source cfgenv.sh
+# FABRIC_CFG_PATHを追加する
+source cfg
 
 # ネットワークを再構築して、チャネルを作って、CC(basic)をデプロイする
 make restart-with-cc
@@ -27,6 +27,6 @@ make logs
 make ps
 
 # peerを切り替える
-source org1env.sh
-source org2env.sh
+source org1
+source org2
 ```
