@@ -61,16 +61,16 @@ ps:
 # chaincodeをパッケージング
 lc-pkg: env
 	peer lifecycle chaincode package basic.tar.gz \
-		--path ../asset-transfer-basic/chaincode-typescript/ \
-		--lang node --label basic_1.0
+		--path ../asset-transfer-basic/chaincode-go/ \
+		--lang golang --label basic_1.0
 
 # chaincodeのパッケージをPeerにインストール
 lc-install: env
 	peer lifecycle chaincode install basic.tar.gz
 
 # インストールされているchaincodeを確認
-lc-query: env
-	peer lifecycle chaincode queryinstalled
+lc-installed: env
+	@peer lifecycle chaincode queryinstalled
 
 # chaincode定義を承認
 lc-approve: env
@@ -97,3 +97,8 @@ lc-commit: env
 		--tlsRootCertFiles $$PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt \
 		--peerAddresses localhost:9051 \
 		--tlsRootCertFiles $$PWD/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+
+# チャネルにコミットされているchaincodeを確認
+lc-committed: env
+	@peer lifecycle chaincode querycommitted --channelID mychannel --name basic \
+		--cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
