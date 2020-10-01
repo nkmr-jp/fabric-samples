@@ -4,12 +4,30 @@
 CTOR=""
 CC_PACKAGE_ID=""
 
-restart:
-	./network.sh down
-	./network.sh up createChannel
-	./network.sh deployCC
+env:
+	@export FABRIC_CFG_PATH=$$PWD/../config/
+	@echo ""
+	@echo "-------- ORG INFO --------"
+	@echo "CORE_PEER_LOCALMSPID:" $$CORE_PEER_LOCALMSPID
+	@echo "CORE_PEER_ADDRESS:" $$CORE_PEER_ADDRESS
+	@echo ""
 
-invoke:
+restart: down up
+
+up: env
+	@echo ""
+	@echo "-------- network up createChannel --------"
+	@echo ""
+	./network.sh up createChannel
+
+down: env
+	@echo ""
+	@echo "-------- network down. --------"
+	@echo ""
+	if docker ps -a | grep -e logspout; then docker stop logspout; docker rm logspout; fi;
+	./network.sh down
+
+invoke: env
 	@peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com --tls \
         --cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
@@ -18,18 +36,36 @@ invoke:
         --peerAddresses localhost:9051 \
         --tlsRootCertFiles $$PWD/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt \
         -c '$(CTOR)'
-query:
+
+query: env
 	@peer chaincode query -C mychannel -n basic -c '$(CTOR)'
 
 logs:
 	@./monitordocker.sh net_test
 
 ps:
-	@docker ps -a | grep -e fabric -e logspout
+	@docker ps -a | grep -e fabric -e logspout -e chaincode
 
-approve:
+lc-pkg: env
+	peer lifecycle chaincode package basic.tar.gz \
+		--path ../asset-transfer-basic/chaincode-typescript/ \
+		--lang node --label basic_1.0
+
+lc-install: env
+	peer lifecycle chaincode install basic.tar.gz
+
+lc-query: env
+	peer lifecycle chaincode queryinstalled
+
+lc-approve: env
 	peer lifecycle chaincode approveformyorg -o localhost:7050 \
 		--ordererTLSHostnameOverride orderer.example.com \
 		--channelID mychannel --name basic --version 1.0 \
 		--package-id $(CC_PACKAGE_ID) --sequence 1 --tls \
 		--cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+lc-commit: env
+	peer lifecycle chaincode checkcommitreadiness \
+		--channelID mychannel --name basic --version 1.0 --sequence 1 --tls \
+		--cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
+		--output json
