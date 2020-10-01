@@ -3,6 +3,9 @@
 
 CTOR=""
 CC_PACKAGE_ID=""
+CC_SEQUENCE=1
+CC_VERSION=1.0
+CC_NAME=basic
 
 env:
 	@echo "[\"$$CORE_PEER_LOCALMSPID\"]"
@@ -60,13 +63,18 @@ ps:
 
 # chaincodeをパッケージング
 lc-pkg: env
-	peer lifecycle chaincode package basic.tar.gz \
+	peer lifecycle chaincode package basic_$(CC_VERSION).tar.gz \
 		--path ../asset-transfer-basic/chaincode-go/ \
-		--lang golang --label basic_1.0
+		--lang golang --label basic_$(CC_VERSION)
+lc-pkg-js: env
+	peer lifecycle chaincode package basic_$(CC_VERSION).tar.gz \
+		--path ../asset-transfer-basic/chaincode-javascript/ \
+		--lang node --label basic_$(CC_VERSION)
+
 
 # chaincodeのパッケージをPeerにインストール
 lc-install: env
-	peer lifecycle chaincode install basic.tar.gz
+	peer lifecycle chaincode install basic_$(CC_VERSION).tar.gz
 
 # インストールされているchaincodeを確認
 lc-installed: env
@@ -76,14 +84,14 @@ lc-installed: env
 lc-approve: env
 	peer lifecycle chaincode approveformyorg -o localhost:7050 \
 		--ordererTLSHostnameOverride orderer.example.com \
-		--channelID mychannel --name basic --version 1.0 \
-		--package-id $(CC_PACKAGE_ID) --sequence 1 --tls \
+		--channelID mychannel --name basic --version $(CC_VERSION) \
+		--package-id $(CC_PACKAGE_ID) --sequence $(CC_SEQUENCE) --tls \
 		--cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
 # chaincodeをチャネルにコミットする準備ができてるか確認
 lc-readiness: env
 	@peer lifecycle chaincode checkcommitreadiness \
-		--channelID mychannel --name basic --version 1.0 --sequence 1 --tls \
+		--channelID mychannel --name basic --version $(CC_VERSION) --sequence $(CC_SEQUENCE) --tls \
 		--cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
 		--output json
 
@@ -91,7 +99,7 @@ lc-readiness: env
 lc-commit: env
 	peer lifecycle chaincode commit -o localhost:7050 \
 		--ordererTLSHostnameOverride orderer.example.com \
-		--channelID mychannel --name basic --version 1.0 --sequence 1 --tls \
+		--channelID mychannel --name basic --version $(CC_VERSION) --sequence $(CC_SEQUENCE) --tls \
 		--cafile $$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
 		--peerAddresses localhost:7051 \
 		--tlsRootCertFiles $$PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt \
