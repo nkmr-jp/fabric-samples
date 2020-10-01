@@ -12,15 +12,15 @@ Before you can deploy the test network, you need to follow the instructions to [
 source cfgenv.sh
 
 # ネットワークを再構築して、チャネルを作って、CC(basic)をデプロイする
-make restart
+make restart-with-cc
 # 台帳を初期化
 make invoke CTOR='{"function":"InitLedger","Args":[]}'
 # 所有者を変更
 make invoke CTOR='{"function":"TransferAsset","Args":["asset6","Christopher"]}'
 # 全てのAssetを取得
-make query CTOR='{"Args":["GetAllAssets"]}' | jq -c .[]
+make query CTOR='{"Args":["GetAllAssets"]}' | jq -c -R 'fromjson? | .[]'
 # Assetを指定して取得
-make query CTOR='{"Args":["ReadAsset","asset6"]}' | jq -c .[]
+make query CTOR='{"Args":["ReadAsset","asset6"]}' | jq -R 'fromjson? | .'
 # net_testのコンテナの全てのログを表示
 make logs
 # fabric関連のコンテナを表示

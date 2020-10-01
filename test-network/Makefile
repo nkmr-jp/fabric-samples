@@ -14,6 +14,12 @@ env:
 
 restart: down up
 
+restart-with-cc: restart
+	@echo ""
+	@echo "-------- deployCC --------"
+	@echo ""
+	./network.sh deployCC
+
 up: env
 	@echo ""
 	@echo "-------- network up createChannel --------"
