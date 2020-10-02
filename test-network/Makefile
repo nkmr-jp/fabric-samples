@@ -1,5 +1,6 @@
 # See https://hyperledger-fabric.readthedocs.io/en/release-2.2/test_network.html
 # See https://hyperledger-fabric.readthedocs.io/en/release-2.2/deploy_chaincode.html
+# See https://hyperledger-fabric.readthedocs.io/en/release-2.2/write_first_app.html
 
 CTOR=""
 CC_PACKAGE_ID=""
@@ -19,6 +20,17 @@ restart-with-cc: restart
 	@echo "-------- deployCC --------"
 	@echo ""
 	./network.sh deployCC
+
+# Writing Your First Application の構成でネットワークを再構築
+restart-first-app: down
+	@echo ""
+	@echo "-------- network up createChannel ca --------"
+	@echo ""
+	./network.sh up createChannel -c mychannel -ca
+	@echo ""
+	@echo "-------- deployCC (basic javascript)  --------"
+	@echo ""
+	./network.sh deployCC -ccn basic -ccl javascript
 
 # networkを構築してチャネルを設定(mychannel)
 up:
@@ -50,13 +62,13 @@ invoke: env
 query: env
 	@peer chaincode query -C mychannel -n basic -c '$(CTOR)'
 
-# 全てのdockerコンテナのログを見る
+# ネットワークの全てのdockerコンテナのログを見る
 logs:
 	@./monitordocker.sh net_test
 
-# 起動しているコンテナの確認
+# ネットワークのコンテナを確認
 ps:
-	@docker ps -a | grep -e fabric -e logspout -e chaincode
+	@docker ps -f "network=net_test" --format="table {{.Networks}}\t{{.Status}}\t{{.ID}}\t{{.Ports}}\t{{.Names}}"
 
 
 # Deploy Chaincode
