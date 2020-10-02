@@ -96,20 +96,20 @@ func main() {
 	logger.Info(string(result))
 
 	logger.Info("Evaluate Transaction: AssetExists", zap.String("detail", ", function returns 'true' if an asset with given assetID exist"))
-	result, err = contract.EvaluateTransaction("AssetExists", "asset1")
+	result, err = contract.EvaluateTransaction("AssetExists", "asset13")
 	if err != nil {
 		logger.Fatalf("Failed to evaluate transaction", err)
 	}
 	logger.Info(string(result))
 
-	logger.Info("Submit Transaction: TransferAsset asset1", zap.String("detail", "transfer to new owner of Tom"))
-	_, err = contract.SubmitTransaction("TransferAsset", "asset1", "Tom")
+	logger.Info("Submit Transaction: TransferAsset asset13")
+	_, err = contract.SubmitTransaction("TransferAsset", "asset13", "Bob")
 	if err != nil {
 		logger.Fatalf("Failed to Submit transaction", err)
 	}
 
-	logger.Info("Evaluate Transaction: ReadAsset", zap.String("detail", "function returns 'asset1' attributes"))
-	result, err = contract.EvaluateTransaction("ReadAsset", "asset1")
+	logger.Info("Evaluate Transaction: ReadAsset asset13")
+	result, err = contract.EvaluateTransaction("ReadAsset", "asset13")
 	if err != nil {
 		logger.Fatalf("Failed to evaluate transaction", err)
 	}
