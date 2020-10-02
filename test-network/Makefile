@@ -7,6 +7,7 @@ CC_PACKAGE_ID=""
 CC_SEQUENCE=1
 CC_VERSION=1.0
 CC_NAME=basic
+LANG=go
 
 env:
 	@echo "[\"$$CORE_PEER_LOCALMSPID\"]"
@@ -30,7 +31,7 @@ restart-first-app: down
 	@echo ""
 	@echo "-------- deployCC (basic javascript)  --------"
 	@echo ""
-	./network.sh deployCC -ccn basic -ccl javascript
+	./network.sh deployCC -ccn basic -ccl $(LANG)
 
 # networkを構築してチャネルを設定(mychannel)
 up:
