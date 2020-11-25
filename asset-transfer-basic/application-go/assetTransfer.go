@@ -9,31 +9,34 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
 	"github.com/hyperledger/fabric-sdk-go/pkg/gateway"
+	"github.com/nkmr-jp/go-logger-scaffold/logger"
 )
 
 func main() {
-	log.Println("============ application-golang starts ============")
+	logger.InitLogger()
+	defer logger.Sync()
+
+	logger.Info("============ application-golang starts ============")
 
 	err := os.Setenv("DISCOVERY_AS_LOCALHOST", "true")
 	if err != nil {
-		log.Fatalf("Error setting DISCOVERY_AS_LOCALHOST environemnt variable: %v", err)
+		logger.Fatalf("Error setting DISCOVERY_AS_LOCALHOST environment variable", err)
 	}
 
 	wallet, err := gateway.NewFileSystemWallet("wallet")
 	if err != nil {
-		log.Fatalf("Failed to create wallet: %v", err)
+		logger.Fatalf("Failed to create wallet", err)
 	}
 
 	if !wallet.Exists("appUser") {
 		err = populateWallet(wallet)
 		if err != nil {
-			log.Fatalf("Failed to populate wallet contents: %v", err)
+			logger.Fatalf("Failed to populate wallet contents", err)
 		}
 	}
 
@@ -52,69 +55,69 @@ func main() {
 		gateway.WithIdentity(wallet, "appUser"),
 	)
 	if err != nil {
-		log.Fatalf("Failed to connect to gateway: %v", err)
+		logger.Fatalf("CONNECT_TO_GATEWAY_ERROR", err)
 	}
 	defer gw.Close()
 
 	network, err := gw.GetNetwork("mychannel")
 	if err != nil {
-		log.Fatalf("Failed to get network: %v", err)
+		logger.Fatalf("GET_NETWORK_ERROR", err)
 	}
 
 	contract := network.GetContract("basic")
 
-	log.Println("--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger")
+	logger.Info("--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger")
 	result, err := contract.SubmitTransaction("InitLedger")
 	if err != nil {
-		log.Fatalf("Failed to Submit transaction: %v", err)
+		logger.Fatalf("Failed to Submit transaction", err)
 	}
-	log.Println(string(result))
+	logger.Info(string(result))
 
-	log.Println("--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger")
+	logger.Info("--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger")
 	result, err = contract.EvaluateTransaction("GetAllAssets")
 	if err != nil {
-		log.Fatalf("Failed to evaluate transaction: %v", err)
+		logger.Fatalf("Failed to evaluate transaction", err)
 	}
-	log.Println(string(result))
+	logger.Info(string(result))
 
-	log.Println("--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments")
+	logger.Info("--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments")
 	result, err = contract.SubmitTransaction("CreateAsset", "asset13", "yellow", "5", "Tom", "1300")
 	if err != nil {
-		log.Fatalf("Failed to Submit transaction: %v", err)
+		logger.Fatalf("Failed to Submit transaction", err)
 	}
-	log.Println(string(result))
+	logger.Info(string(result))
 
-	log.Println("--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID")
+	logger.Info("--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID")
 	result, err = contract.EvaluateTransaction("ReadAsset", "asset13")
 	if err != nil {
-		log.Fatalf("Failed to evaluate transaction: %v\n", err)
+		logger.Fatalf("Failed to evaluate transaction\n", err)
 	}
-	log.Println(string(result))
+	logger.Info(string(result))
 
-	log.Println("--> Evaluate Transaction: AssetExists, function returns 'true' if an asset with given assetID exist")
+	logger.Info("--> Evaluate Transaction: AssetExists, function returns 'true' if an asset with given assetID exist")
 	result, err = contract.EvaluateTransaction("AssetExists", "asset1")
 	if err != nil {
-		log.Fatalf("Failed to evaluate transaction: %v\n", err)
+		logger.Fatalf("Failed to evaluate transaction\n", err)
 	}
-	log.Println(string(result))
+	logger.Info(string(result))
 
-	log.Println("--> Submit Transaction: TransferAsset asset1, transfer to new owner of Tom")
+	logger.Info("--> Submit Transaction: TransferAsset asset1, transfer to new owner of Tom")
 	_, err = contract.SubmitTransaction("TransferAsset", "asset1", "Tom")
 	if err != nil {
-		log.Fatalf("Failed to Submit transaction: %v", err)
+		logger.Fatalf("Failed to Submit transaction", err)
 	}
 
-	log.Println("--> Evaluate Transaction: ReadAsset, function returns 'asset1' attributes")
+	logger.Info("--> Evaluate Transaction: ReadAsset, function returns 'asset1' attributes")
 	result, err = contract.EvaluateTransaction("ReadAsset", "asset1")
 	if err != nil {
-		log.Fatalf("Failed to evaluate transaction: %v", err)
+		logger.Fatalf("Failed to evaluate transaction", err)
 	}
-	log.Println(string(result))
-	log.Println("============ application-golang ends ============")
+	logger.Info(string(result))
+	logger.Info("============ application-golang ends ============")
 }
 
 func populateWallet(wallet *gateway.Wallet) error {
-	log.Println("============ Populating wallet ============")
+	logger.Info("============ Populating wallet ============")
 	credPath := filepath.Join(
 		"..",
 		"..",
