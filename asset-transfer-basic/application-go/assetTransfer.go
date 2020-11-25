@@ -17,7 +17,7 @@ import (
 	"github.com/nkmr-jp/go-logger-scaffold/logger"
 )
 
-func main() {
+func _main() {
 	logger.InitLogger()
 	defer logger.Sync()
 
