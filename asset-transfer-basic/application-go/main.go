@@ -6,24 +6,35 @@ import (
 	"github.com/nkmr-jp/go-logger-scaffold/logger"
 )
 
+const (
+	channelID   = "mychannel"
+	chaincodeID = "basic"
+)
+
 func main() {
 	logger.InitLogger()
 	defer logger.Sync()
 	fabric.InitFabric()
 	defer fabric.Close()
+	run()
 }
 
 func run() {
-	c := fabric.GetContract()
-	result, err := c.SubmitTransaction("InitLedger")
+	newChannel, err := fabric.NewChannel(channelID)
 	if err != nil {
-		logger.Fatalf("Failed to Submit transaction", err)
+		logger.Errorf("NEW_CHANNEL_ERROR", err)
+	}
+	contract := newChannel.GetContract(chaincodeID)
+
+	result, err := contract.SubmitTransaction("InitLedger")
+	if err != nil {
+		logger.Fatalf("INIT_LEDGER_ERROR", err)
 	}
 	logger.Info(string(result))
 
-	result, err = c.EvaluateTransaction("GetAllAssets")
+	result, err = contract.EvaluateTransaction("GetAllAssets")
 	if err != nil {
-		logger.Fatalf("Failed to evaluate transaction", err)
+		logger.Fatalf("GET_ALL_ASSETS_ERROR", err)
 	}
 	logger.Info(string(result))
 }
