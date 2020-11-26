@@ -43,11 +43,13 @@ func (w *Wallet) build() error {
 		return nil
 	}
 
+	// get certificate
 	cert, err := ioutil.ReadFile(filepath.Clean(certPath))
 	if err != nil {
 		return err
 	}
 
+	// get private key
 	files, err := ioutil.ReadDir(keyDir)
 	if err != nil {
 		return err
@@ -55,13 +57,13 @@ func (w *Wallet) build() error {
 	if len(files) != 1 {
 		return fmt.Errorf("keystore folder should have contain one file")
 	}
-
 	keyPath := filepath.Join(keyDir, files[0].Name())
 	key, err := ioutil.ReadFile(filepath.Clean(keyPath))
 	if err != nil {
 		return err
 	}
 
+	// creates an X509 identity
 	identity := gateway.NewX509Identity(w.mspID, string(cert), string(key))
 	if err := w.wallet.Put(w.label, identity); err != nil {
 		return err

@@ -3,6 +3,7 @@ package fabric
 import "path/filepath"
 
 var (
+	// connection profile path
 	ccpPath = filepath.Join(
 		"..",
 		"..",
@@ -12,6 +13,9 @@ var (
 		"org1.example.com",
 		"connection-org1.yaml",
 	)
+	// credentials path
+	// See: https://hyperledger-fabric.readthedocs.io/en/release-2.2/membership/membership.html#msp-structure
+	// See: https://hyperledger-fabric.readthedocs.io/en/release-2.2/test_network.html#bring-up-the-network-with-certificate-authorities
 	credPath = filepath.Join(
 		"..",
 		"..",
@@ -23,6 +27,8 @@ var (
 		"User1@org1.example.com",
 		"msp",
 	)
+	// certificate pem
 	certPath = filepath.Join(credPath, "signcerts", "cert.pem")
-	keyDir   = filepath.Join(credPath, "keystore")
+	// private key dir
+	keyDir = filepath.Join(credPath, "keystore")
 )
